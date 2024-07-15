@@ -1,8 +1,13 @@
-# app_kangkung
+# Kangkung App
 
-A new Flutter project.
+Kangkung App adalah aplikasi individu yang digunakan pembukuan hasil penjualan kangkung.
+Fitur : 
+1. Pendapatan dan Pengeluaran yang dimana dapat mengetahui keuntungan setiap hari, bulan maupun tahun.
+2. Pencarian Data dengan tanggal yang dapat mengetahui laba bersih setiap hari, bulan maupun tahun.
 
-## Getting Started
+## Test Aplikasi 
+
+Untuk Test Aplikasi dapat di akses di 
 
 This project is a starting point for a Flutter application.
 
