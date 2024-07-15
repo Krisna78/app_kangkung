@@ -29,8 +29,11 @@ class TextFieldPage extends StatelessWidget {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             keyboardType: textInputType,
             inputFormatters: textInputType == TextInputType.number
-                ? [FilteringTextInputFormatter.allow(RegExp(r'[0-9]'))]
-                : [FilteringTextInputFormatter.deny(RegExp(r'[ \-\,\.]'))],
+                ? [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                    FilteringTextInputFormatter.deny(RegExp(r'[ \-\,\.]')),
+                  ]
+                : [],
             decoration: InputDecoration(
               errorStyle: const TextStyle(
                 fontSize: 14,
