@@ -5,10 +5,6 @@ Fitur :
 1. Pendapatan dan Pengeluaran yang dimana dapat mengetahui keuntungan setiap hari, bulan maupun tahun.
 2. Pencarian Data dengan tanggal yang dapat mengetahui laba bersih setiap hari, bulan maupun tahun.
 
-## Test Aplikasi 
-
-Untuk Test Aplikasi dapat di akses di 
-
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
