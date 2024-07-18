@@ -7,6 +7,7 @@ class FinancialController {
   var totalIncome = 0.obs;
   var totalExpense = 0.obs;
   var netTotal = 0.obs;
+  var financialTransaction = <Income>[].obs;
 
   Future<Map<String, int>> calculateTotalIncomeAndExpenses({int? year,int? month,int? day}) async {
     final db = await DatabaseHelper.instance.database;
@@ -37,7 +38,6 @@ class FinancialController {
         whereArgs = [formattedMonth];
     }
 
-
     final result = await db.query(
       'transactions',
       where: whereClause,
@@ -46,19 +46,23 @@ class FinancialController {
 
     int total_income = 0;
     int total_expense = 0;
+    List<Income> financialList = [];
 
     for (var json in result) {
       final transaction = Income.fromMap(json);
+      financialList.add(transaction);
       if (transaction.type == 'income') {
         total_income += transaction.amount;
       } else if (transaction.type == 'expense') {
         total_expense += transaction.amount;
       }
     }
+    financialTransaction.value = financialList;
     return {
       'totalIncome': total_income,
       'totalExpense': total_expense,
       'netTotal': total_income - total_expense,
+
     };
   }
 
@@ -67,5 +71,8 @@ class FinancialController {
     totalIncome.value = totals['totalIncome'] ?? 0;
     totalExpense.value = totals['totalExpense'] ?? 0;
     netTotal.value = totals['netTotal'] ?? 0;
+  }
+  Future<void> fetchFinancial(int? year,int? month,int? day) async {
+    await calculateTotalIncomeAndExpenses(year: year,month: month,day: day);
   }
 }
