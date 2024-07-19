@@ -3,6 +3,7 @@ import 'package:app_kangkung/home/component/button.dart';
 import 'package:app_kangkung/home/component/textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../model/income.dart';
 
@@ -10,6 +11,7 @@ class IncomePage extends StatefulWidget {
   IncomePage({super.key});
   final _formKey = GlobalKey<FormState>();
   final titleControl = TextEditingController();
+  final dateControl = TextEditingController();
   final quantityControl = TextEditingController();
   final satuanControl = TextEditingController();
   final deskripsiControl = TextEditingController();
@@ -20,11 +22,27 @@ class IncomePage extends StatefulWidget {
 
 class _IncomePageState extends State<IncomePage> {
   final IncomeController incomeController = Get.find<IncomeController>();
+  DateTime now = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
-    DateTime now = DateTime.now();
-    String formattedDate =
-        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+    Future<void> _selectDate(BuildContext context) async {
+      final DateTime? picked = await showDatePicker(
+        context: context,
+        initialDate: now,
+        firstDate: DateTime(2000),
+        lastDate: now,
+      );
+      if (picked != null && picked != now) {
+        setState(() {
+          now = picked;
+          widget.dateControl.text =
+              DateFormat('dd-MM-yyyy').format(now);
+        });
+      }
+    }
+
+    String formattedDate = '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
     return Scaffold(
       appBar: AppBar(),
       body: SingleChildScrollView(
@@ -60,6 +78,17 @@ class _IncomePageState extends State<IncomePage> {
                 ),
                 const SizedBox(height: 12),
                 TextFieldPage(
+                  controller: widget.dateControl,
+                  hintText: "Tanggal",
+                  textInputType: TextInputType.datetime,
+                  isFilled: true,
+                  isDateField: true,
+                  prefixIcon: IconButton(
+                      onPressed: () => _selectDate(context),
+                      icon: Icon(Icons.calendar_month)),
+                ),
+                const SizedBox(height: 12),
+                TextFieldPage(
                   controller: widget.deskripsiControl,
                   hintText: "Deskripsi",
                   isLongText: true,
@@ -70,8 +99,14 @@ class _IncomePageState extends State<IncomePage> {
                 MyButton(
                     onTap: () async {
                       if (widget._formKey.currentState!.validate()) {
+                        String dbFormattedDate =
+                            widget.dateControl.text.isNotEmpty
+                                ? DateFormat('yyyy-MM-dd').format(
+                                    DateFormat('dd-MM-yyyy')
+                                        .parse(widget.dateControl.text))
+                                : formattedDate;
                         final income = Income(
-                          periodeTanggal: formattedDate,
+                          periodeTanggal: dbFormattedDate,
                           type: 'income',
                           quantity: int.parse(widget.quantityControl.text),
                           hargaSatuan: int.parse(widget.satuanControl.text),

@@ -7,6 +7,9 @@ class TextFieldPage extends StatelessWidget {
   final bool isLongText;
   final TextInputType textInputType;
   final int? maxLine;
+  final Widget? prefixIcon;
+  final bool isFilled;
+  final bool isDateField;
 
   const TextFieldPage({
     super.key,
@@ -15,6 +18,9 @@ class TextFieldPage extends StatelessWidget {
     this.isLongText = false,
     this.textInputType = TextInputType.text,
     this.maxLine,
+    this.prefixIcon,
+    this.isFilled = true,
+    this.isDateField = false,
   });
 
   @override
@@ -35,6 +41,7 @@ class TextFieldPage extends StatelessWidget {
                   ]
                 : [],
             decoration: InputDecoration(
+              prefixIcon: prefixIcon,
               errorStyle: const TextStyle(
                 fontSize: 14,
               ),
@@ -48,12 +55,15 @@ class TextFieldPage extends StatelessWidget {
               focusedErrorBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Color(0xFF80AF81))),
               fillColor: Colors.grey.shade100,
-              filled: true,
+              filled: isFilled,
               hintText: hintText,
               hintStyle: TextStyle(color: Colors.grey[500]),
             ),
+            readOnly: textInputType == TextInputType.datetime ? true : false,
             validator: (value) {
-              if (isLongText) {
+              if (isDateField) {
+                return null;
+              } else if (isLongText) {
                 return null;
               } else if (value == null || value.isEmpty) {
                 return "Mohon wajib di isi";
