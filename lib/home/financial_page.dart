@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
+import '../controller/income_controller.dart';
 import 'detail_transaction.dart';
 
 class FinancialPage extends StatefulWidget {
@@ -11,6 +12,7 @@ class FinancialPage extends StatefulWidget {
   final _formKey = GlobalKey<FormState>();
   final FinancialController financialController =
       Get.put(FinancialController());
+  final IncomeController incomeController = Get.put(IncomeController());
 
   @override
   State<FinancialPage> createState() => _FinancialPageState();
@@ -243,72 +245,106 @@ class _FinancialPageState extends State<FinancialPage> {
                         Color arrowColor = income.type == 'income'
                             ? const Color(0xFF508D4E)
                             : Colors.red;
-                        return GestureDetector(
-                          onTap: () {
-                            Get.to(() => DetailTransaction(id: income.id!));
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFD6EFD8),
-                              borderRadius: BorderRadius.circular(10),
+                        return Dismissible(
+                          key: Key(income.id.toString()),
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10)),
                             ),
-                            padding: EdgeInsets.all(8),
-                            margin: EdgeInsets.only(bottom: 8),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(
-                                        income.type == 'income'
-                                            ? Icons
-                                                .keyboard_double_arrow_up_outlined
-                                            : Icons
-                                                .keyboard_double_arrow_down_outlined,
-                                        size: 40,
-                                        color: arrowColor,
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          income.title,
-                                          style: TextStyle(fontSize: 16),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: const Icon(
+                              Icons.delete_forever,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                          ),
+                          direction: DismissDirection.endToStart,
+                          onDismissed: (direction) async {
+                            await widget.incomeController
+                                .deleteIncome(income.id!);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  "${income.title} Terhapus",
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                backgroundColor: Color(0xFF508D4E),
+                                duration: const Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                          child: GestureDetector(
+                            onTap: () {
+                              Get.to(() => DetailTransaction(id: income.id!));
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFD6EFD8),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              padding: EdgeInsets.all(8),
+                              margin: EdgeInsets.only(bottom: 8),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      IconButton(
+                                        onPressed: () {},
+                                        icon: Icon(
+                                          income.type == 'income'
+                                              ? Icons
+                                                  .keyboard_double_arrow_up_outlined
+                                              : Icons
+                                                  .keyboard_double_arrow_down_outlined,
+                                          size: 40,
+                                          color: arrowColor,
                                         ),
-                                        Text(
-                                          formatCurrency(income.amount),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 2,
-                                          style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.w600,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            income.title,
+                                            style: TextStyle(fontSize: 16),
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(Icons.calendar_month_outlined),
-                                    const SizedBox(width: 3),
-                                    Text(
-                                      formattedDate(income.periodeTanggal!),
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
+                                          Text(
+                                            formatCurrency(income.amount),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 2,
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.calendar_month_outlined),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        formattedDate(income.periodeTanggal!),
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         );

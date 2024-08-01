@@ -17,13 +17,11 @@ class IncomeController extends GetxController {
   Future<void> addIncome(Income income) async {
     await DatabaseHelper.instance.insertIncome(income);
     await fetchIncomes();
-    await calculateTotalIncomeThisMonth();
   }
 
   Future<void> addExpense(Income income) async {
     await DatabaseHelper.instance.insertIncome(income);
     await fetchIncomes();
-    await calculateTotalIncomeThisMonth();
   }
 
   Future<void> fetchIncomes() async {
@@ -33,8 +31,7 @@ class IncomeController extends GetxController {
   }
 
   Future<void> updateIncome(Income income) async {
-    await DatabaseHelper.instance
-        .updateIncome(income);
+    await DatabaseHelper.instance.updateIncome(income);
     await fetchIncomes();
   }
 
@@ -44,19 +41,17 @@ class IncomeController extends GetxController {
 
   Future<void> deleteIncome(int id) async {
     await DatabaseHelper.instance.deleteIncome(id);
-    await fetchIncomes(); 
+    await fetchIncomes();
   }
 
   Future<int> calculateTotalIncomeThisMonth() async {
     final db = await DatabaseHelper.instance.database;
     final now = DateTime.now();
-
-    final startOfMonth = DateTime(now.year, now.month, 1);
-    final endOfMonth = DateTime(now.year, now.month + 1, 0);
+    String formattedMonth = DateFormat('yyyy-MM').format(now);
     final result = await db.query(
       'transactions',
-      where: 'periode_tanggal BETWEEN ? AND ?',
-      whereArgs: [startOfMonth.toIso8601String(), endOfMonth.toIso8601String()],
+      where: 'strftime("%Y-%m", periode_tanggal) = ?',
+      whereArgs: [formattedMonth],
     );
     int total_income = 0;
     int total_expense = 0;
@@ -68,7 +63,8 @@ class IncomeController extends GetxController {
         total_expense += transaction.amount;
       }
     }
-    return totalIncome.value = total_income - total_expense;
+    totalIncome.value = total_income - total_expense;
+    return totalIncome.value;
   }
 
   Future<void> fetchTodayIncomes() async {
